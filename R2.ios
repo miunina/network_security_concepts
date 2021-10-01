@@ -18,7 +18,7 @@ permit esp host 172.30.2.2 host 172.30.2.1
 permit ah host 172.30.2.2 host 172.30.2.1
 deny ip any any
 exit
-int se8/0.12
+int ser0/1/0
 ip access-group siteB_in in
 
 ip access-list extend siteB_out
@@ -30,7 +30,7 @@ permit esp host 172.30.2.1 host 172.30.2.2
 permit ah host 172.30.2.1 host 172.30.2.2
 deny ip any any
 exit 
-int se8/0.12
+int ser0/1/0
 ip access-group siteB_out out
 
 #---------------isakmp
