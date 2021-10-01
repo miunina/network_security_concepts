@@ -37,13 +37,15 @@ int ser0/1/0
 ip access-group siteB_out out
 
 #---------------isakmp
-crypto isakmp key cisco12345 address 172.30.2.2
+
 crypto isakmp policy 1
 encryption aes 256
 hash sha 
 authentication pre-share 
-group 5
+group 24
 lifetime 3600
+exit
+crypto isakmp key vpnpa55 address 10.1.1.2
 
 #configure each router with an ACL to permit
 # traffic from the local LAN to the remote LAN,
@@ -51,23 +53,24 @@ lifetime 3600
 # The ACL will be used in the crypto map configuration 
 #to specify what traffic will trigger the start of IKE Phase 1
 
-access-list 102 permit ip 192.168.1.0 0.0.0.255 10.0.1.0 0.0.0.255
+
 
 crypto ipsec transform-set ?
-crypto ipsec transform-set R1-R2 ?
+crypto ipsec transform-set VPN_SET ?
 
-crypto ipsec transform-set R1-R2 esp-aes esp-sha-hmac 
-
+crypto ipsec transform-set VPN_SET esp-aes  esp-sha-hmac 
+exit
+access-list 110 permit ip 192.168.3.0 0.0.0.255 192.168.1.0 0.0.0.255
 #Crypto map
 conf terminal
-crypto map R1-R2_MAP 10 ipsec-isakmp
-match address 102 
-set transform-set R1-R2
-set peer 172.30.2.1
+crypto map VPN_MAP 10 ipsec-isakmp
+match address 110
+set transform-set VPN_SET
+set peer 10.1.1.2
 set pfs group24
 set security-association lifetime seconds 900 
 exit
 
 conf terminal
 interface serial0/1/0
-crypto map R1-R2_MAP
+crypto map VPN_MAP
