@@ -1,3 +1,6 @@
+conf terminal
+license boot module c1900 technology-package securityk9
+
 enable
 configure terminal
 int ser0/1/0
