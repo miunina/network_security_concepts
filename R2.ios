@@ -54,3 +54,17 @@ crypto ipsec transform-set ?
 crypto ipsec transform-set R1-R2 ?
 
 crypto ipsec transform-set R1-R2 esp-aes esp-sha-hmac 
+
+#Crypto map
+conf terminal
+crypto map R1-R2_MAP 10 ipsec-isakmp
+match address 102 
+set transform-set R1-R2
+set peer 172.30.2.1
+set pfs group24
+set security-association lifetime seconds 900 
+exit
+
+conf terminal
+interface serial0/1/0
+crypto map R1-R2_MAP
