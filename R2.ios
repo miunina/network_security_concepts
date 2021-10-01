@@ -1,0 +1,43 @@
+enable
+configure terminal
+int ser0/1/0
+ip address 172.30.2.2 255.255.255.0
+no sh
+int fa0/0
+ip address 192.168.1.1 255.255.255.0
+no sh
+end
+#------------------------------ACL
+conf t
+ip access-list extend siteB_in
+permit ip 192.168.1.0 0.0.0.255 10.0.1.0 0.0.0.255
+permit icmp host 172.30.2.2 host 172.30.2.1 
+permit udp host 172.30.2.2 host 172.30.2.1
+permit udp host 172.30.2.2 host 172.30.2.1 eq isakmp
+permit esp host 172.30.2.2 host 172.30.2.1
+permit ah host 172.30.2.2 host 172.30.2.1
+deny ip any any
+exit
+int se8/0.12
+ip access-group siteB_in in
+
+ip access-list extend siteB_out
+permit ip 10.0.1.0 0.0.0.255 192.168.1.0 0.0.0.255
+permit icmp host 172.30.2.1 host 172.30.2.2 
+permit udp host 172.30.2.1 host 172.30.2.2
+permit udp host 172.30.2.1 host 172.30.2.2 eq isakmp
+permit esp host 172.30.2.1 host 172.30.2.2
+permit ah host 172.30.2.1 host 172.30.2.2
+deny ip any any
+exit 
+int se8/0.12
+ip access-group siteB_out out
+
+#---------------isakmp
+crypto isakmp key cisco12345 address 172.30.2.2
+crypto isakmp policy 1
+encryption aes 256
+hash sha 
+authentication pre-share 
+group 5
+lifetime 3600
